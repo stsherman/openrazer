@@ -16,6 +16,7 @@ class RazerKeyboard(__RazerDevice):
         self._capabilities['macro_mode_led'] = self._has_feature('razer.device.led.macromode', 'setMacroMode')
         self._capabilities['macro_mode_led_effect'] = self._has_feature('razer.device.led.macromode', 'setMacroEffect')
         self._capabilities['macro_mode_modifier'] = self._has_feature('razer.device.macro', 'setModeModifier')
+        self._capabilities['battery'] = self._has_feature('razer.device.power', 'getBattery')
 
         # Setup base stuff if need be
         if self.has('game_mode_led'):
@@ -26,6 +27,9 @@ class RazerKeyboard(__RazerDevice):
 
         if self.has('lighting_profile_led_red') or self.has('lighting_profile_led_green') or self.has('lighting_profile_led_blue'):
             self._dbus_interfaces['profile_led'] = _dbus.Interface(self._dbus, "razer.device.lighting.profile_led")
+
+        if self.has('battery'):
+            self._dbus_interfaces['power'] = _dbus.Interface(self._dbus, "razer.device.power")
 
     @property
     def game_mode_led(self) -> bool:
@@ -178,6 +182,24 @@ class RazerKeyboard(__RazerDevice):
         """
         if self.has('lighting_profile_led_blue'):
             self._dbus_interfaces['profile_led'].setBlueLED(enable)
+
+    @property
+    def battery_level(self) -> int:
+        """
+        Get battery level from device
+        :return: Battery level (0-100)
+        """
+        if self.has('battery'):
+            return int(self._dbus_interfaces['power'].getBattery())
+
+    @property
+    def is_charging(self) -> bool:
+        """
+        Get whether the device is charging or not
+        :return: Boolean
+        """
+        if self.has('battery'):
+            return bool(self._dbus_interfaces['power'].isCharging())
 
 
 DEVICE_PID_MAP = {
