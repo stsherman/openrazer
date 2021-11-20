@@ -2219,10 +2219,9 @@ class RazerBasiliskUltimateReceiver(RazerBasiliskUltimateWired):
     def __init__(self, *args, **kwargs):
         super(RazerBasiliskUltimateReceiver, self).__init__(*args, **kwargs)
 
-        self._battery_manager = _BatteryManager(
-            self, self._device_number, 'Razer Basilisk Ultimate')
-        self._battery_manager.active = self.config.getboolean(
-            'Startup', 'battery_notifier', fallback=False)
+        self._battery_manager = _BatteryManager(self, self._device_number, 'Razer Basilisk Ultimate')
+        self._battery_manager.active = self.config.getboolean('Startup', 'mouse_battery_notifier', fallback=False)
+        self._battery_manager.frequency = self.config.getint('Startup', 'mouse_battery_notifier_freq', fallback=10 * 60)
 
     def _close(self):
         """
